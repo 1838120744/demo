@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"	href="/layui/css/layui.css">
+    <script src="/layui/layui.js"></script>
+    <script type="text/javascript" src="/jq/jquery.min.js"></script>
+    <title>修改学生信息</title>
+</head>
+<body>
+<script>
+    var layer;
+    layui.use([ 'layer','table','element' ], function() {
+         layer = layui.layer;
+    });
+    function submit() {
+        var name=$("#name").val().trim(),age=$("#age").val(),tel=$("#tel").val();
+            if(name==null||name=='') {
+            layer.msg("姓名不能为空！");
+            return false;
+        }
+        if(age!=null&&age<0) {
+            layer.msg("年龄不能为负数！");
+            return false;
+        }
+        var src=new RegExp("[0-9]{11}");
+        if(!src.test(tel)) {
+            layer.msg("请输入正确的电话！");
+            return false;
+        }
+        var student = {
+            id: $("#id").val(),
+            name: name,
+            age: age,
+            classroom: $("#classroom").val(),
+            parent: $("#parent").val(),
+            tel: tel
+        }
+        console.log( JSON.stringify(student));
+        var url;
+            if("${student.id!null}"=="")
+                url = '/student/go_add';
+            else
+                url = '/student/go_update';
+        $.ajax({
+                type: 'POST',
+                data:  JSON.stringify(student),
+                contentType:"application/json",
+                dataType: "json",
+                url: url,
+                success: function (result) {
+                    layer.msg(result.msg);
+                },
+                error: function () {
+                    layer.msg("操作失败");
+                }
+            });
+        }
+</script>
+<% if(isEmpty(student)) {%>
+    <div class="layui-form-item">
+        <label class="layui-form-label"> 账号 </label>
+        <div class="layui-input-block">
+                <input type="text" id="id"  value="${student.id!}"  autocomplete="off" class="layui-input">
+        </div>
+    </div>
+<%}else{%>
+    <input  id="id"  value="${student.id!}" type="hidden">
+<%}%>
+    <div class="layui-form-item">
+        <label class="layui-form-label"> 姓名  </label>
+        <div class="layui-input-block">
+            <input type="text" id="name"  value="${student.name!}" autocomplete="off" class="layui-input">
+        </div>
+    </div> <div class="layui-form-item">
+    <label class="layui-form-label"> 年龄 </label>
+    <div class="layui-input-block">
+        <input type="text" id="age"  value="${student.age!}" autocomplete="off" class="layui-input">
+    </div>
+</div>
+    <div class="layui-form-item">
+    <label class="layui-form-label"> 班级 </label>
+    <div class="layui-input-block">
+        <input type="text" id="classroom"  value="${student.classroom!}"  autocomplete="off" class="layui-input">
+    </div>
+    </div>
+    <div class="layui-form-item">
+    <label class="layui-form-label"> 父母 </label>
+    <div class="layui-input-block">
+        <input type="text" id="parent"  value="${student.parent!}"  autocomplete="off" class="layui-input">
+    </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"> 电话 </label>
+        <div class="layui-input-block">
+            <input type="text" id="tel"  value="${student.tel!}" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <input type="button" value='提交' onclick="submit()" class="layui-btn">
+</body>
+</html>

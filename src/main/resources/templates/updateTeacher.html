@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"	href="/layui/css/layui.css">
+    <script src="/layui/layui.js"></script>
+    <script type="text/javascript" src="/jq/jquery.min.js"></script>
+    <title>修改教师信息</title>
+</head>
+<body>
+<script>
+    var layer;
+    layui.use([ 'layer','table','element' ], function() {
+         layer = layui.layer;
+    });
+    function submit() {
+        var psw=$("#psw").val().trim(),confirm=$("#confirm").val().trim(),name=$("#name").val().trim();
+        if(name==null||name==''){
+            layer.msg("名字不能为空！");
+            return false;
+        }
+        if(psw==null||confirm==null||psw==''||confirm==''){
+            layer.msg("请输入密码！");
+            return false;
+        }
+        if(psw!=confirm) {
+        layer.msg("密码不一致！");
+        return false;
+        }
+        var teacher = {
+            id: $("#id").val(),
+            name: name,
+            psw: psw
+        }
+        console.log( JSON.stringify(teacher));
+        var url;
+        if("${teacher.id!null}"=="")
+            url='/teacher/go_add';
+        else
+            url='/teacher/go_update';
+            $.ajax({
+                type: 'POST',
+                data:  JSON.stringify(teacher),
+                contentType:"application/json",
+                dataType: "json",
+                url: url,
+                success: function (result) {
+                    layer.msg(result.msg);
+                },
+                error: function () {
+                    layer.msg("操作失败");
+                }
+            });
+        }
+</script>
+<% if(isEmpty(teacher)) {%>
+    <div class="layui-form-item">
+        <label class="layui-form-label"> 账号 </label>
+        <div class="layui-input-block">
+            <input type="text" id="id"  value="${teacher.id!}" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+<%}else{%>
+    <input id="id"  value="${teacher.id!}" type="hidden" />
+<%}%>
+    <div class="layui-form-item">
+        <label class="layui-form-label"> 姓名  </label>
+        <div class="layui-input-block">
+            <input type="text" id="name"  value="${teacher.name!}" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"> 密码 </label>
+        <div class="layui-input-block">
+            <input type="password" id="psw"  value="${teacher.psw!}" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"> 确认密码 </label>
+        <div class="layui-input-block">
+            <input type="password" id="confirm"  value="${teacher.psw!}" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <input type="button" value='提交' onclick="submit()" class="layui-btn">
+</body>
+</html>

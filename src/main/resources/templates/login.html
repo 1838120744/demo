@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+</head>
+<body><!--post 重复提交有害；敏感信息  -->
+<link rel="stylesheet"	href="layui/css/layui.css">
+<script type="text/javascript" src="layui/layui.js"></script>
+<script type="text/javascript" src="jq/jquery.min.js"></script>
+<script>
+    function submit() {
+        var name = $("#name").val();
+        var psw = $("#psw").val();
+        $.post("/go_login", {name:name,psw: psw
+        }, function(response) {
+            if (response.code==1) {
+                window.location.href = "/student";
+            } else {
+                alert("登录失败！");
+            }
+        }, 'json');
+    }
+</script>
+<div class="layui-form-item">
+    <label class="layui-form-label">账号：</label>
+    <div class="layui-input-block">
+        <input type="text" name="name" id="name"  required  lay-verify="required" placeholder="请输入账号" autocomplete="off" class="layui-input"/>
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">密码：</label>
+    <div class="layui-input-block">
+        <input type="password" name="psw" id="psw" required  lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input"/>
+    </div>
+</div>
+<input type="button" onclick="submit()" class="layui-btn" value="立即提交">
+</body>
+</html>

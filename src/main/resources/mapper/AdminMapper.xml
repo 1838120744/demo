@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjcloud.chatroom.demo.mapper.AdminMapper">
+    <resultMap id="Admin" type="com.yjcloud.chatroom.demo.model.Admin">
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="psw" property="psw" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="findByNameAndPsw" resultType="com.yjcloud.chatroom.demo.model.Admin" parameterType="java.lang.String">
+        select * from  admin where name=#{name} and psw=#{psw}
+    </select>
+</mapper>

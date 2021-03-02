@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"	href="layui/css/layui.css">
+    <script src="layui/layui.js"></script>
+    <script type="text/javascript" src="jq/jquery.min.js"></script>
+    <title>学生管理</title>
+</head>
+<body>
+<!--jQuery.post(url,data,success(data, textStatus, jqXHR),dataType)-->
+<ul class="layui-nav" lay-filter="">
+    <li class="layui-nav-item layui-this"><a href="/student" target="_parent">学生查询</a></li>
+    <li class="layui-nav-item "><a href="/teacher" target="_parent">教师查询</a></li>
+    <li class="layui-nav-item "><a href="/chatroom" target="_parent">聊天室</a></li>
+    <li class="layui-nav-item">
+        <a href=""><img src="default_head_img.jpg" class="layui-nav-img">${session.user.name}</a>
+        <dl class="layui-nav-child">
+            <dd><a href="/logout">注销</a></dd>
+        </dl>
+    </li>
+</ul>
+<button onclick=window.open("/updateStudent") class="layui-btn layui-btn-sm"><i class="layui-icon">&#xe654;</i>添加</button>
+<input type="text" id="search"  autocomplete="off" class="layui-input-inline">
+<button onclick="find()" class="layui-btn layui-btn-sm">查找</button>
+<table id="student" lay-filter="table"></table>
+<script type="text/html" id="table_bar">
+    <div class="layui-btn-group">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+        <a class="layui-btn layui-btn-xs" lay-event="delete">删除</a>
+    </div>
+</script>
+<script type="text/javascript">
+    var table;
+    function reload_data(){
+        table.reload('list', {
+            where: {
+            },page: {curr: 1 //重新从第 1 页开始
+            }
+        });
+    }
+    layui.use([ 'layer','table','element' ], function(){
+        var layer = layui.layer,
+            element = layui.element;
+        table=layui.table;
+        table.render({
+            elem: '#student'
+            ,height:'full-120'
+            ,url: '/student/list' //数据接口
+            ,page: true //开启分页
+            ,cols: [ [ //表头
+                {field: 'id', title: 'ID', width:80, sort: true}
+                ,{field: 'name', title: '用户名', width:120}
+                ,{field: 'age', title: '年龄', width:80, sort: true}
+                ,{field: 'classroom', title: '班级', width:80}
+                ,{field: 'parent', title: '父母', width: 177}
+                ,{field: 'tel', title: '电话', width: 180, sort: true}
+                ,{width:120,title: '操作',  toolbar: '#table_bar'}
+            ] ]
+            ,id:'list'
+        });
+        table.on('tool(table)', function(obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                , layEvent = obj.event; //获得 lay-event 对应的值
+            if (layEvent === 'edit') {
+                window.open("/student/edit?id="+data.id);                 //在另外新建窗口中打开窗口
+               // window.location.href='/student/edit?id='+data.id; //iframe的url
+            } else if(layEvent === 'delete'){
+                $.ajax({
+                    type : 'POST',
+                    data:{id:data.id},
+                    dataType: "json",
+                    url : '/student/delete',
+                    success : function(result) {
+                        reload_data();
+                        layer.msg(result.msg);
+                    },
+                    error : function() {
+                        layer.msg("删除失败");
+                    }
+                });
+            }
+        });
+    });
+    function find() {
+        var search=$("#search").val() ;
+        if (search==null||search=="")
+        {
+            reload_data();
+            return true;
+        }
+        table.render({
+            elem: '#student'
+            , height: 'full-120'
+            , url: '/student/search?search=' + search + '&type=id' //数据接口
+            , page: true //开启分页
+            , cols: [[ //表头
+                {field: 'id', title: 'ID', width: 80, sort: true}
+                , {field: 'name', title: '用户名', width: 120}
+                , {field: 'age', title: '年龄', width: 80, sort: true}
+                , {field: 'classroom', title: '班级', width: 80}
+                , {field: 'parent', title: '父母', width: 177}
+                , {field: 'tel', title: '电话', width: 80, sort: true}
+                , {width: 120, title: '操作', toolbar: '#table_bar'}
+            ]]
+        });
+    }
+</script>
+</body>
+</html>
